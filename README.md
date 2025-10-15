@@ -36,8 +36,6 @@ cp environments/smtp.env.example environments/smtp.env
 
 You can then access:
 - Grafana: [http://localhost:3000](http://localhost:3000/)
-- Prometheus web UI: [http://localhost:9090](http://localhost:9090/)
-- Alertmanager web UI: [http://localhost:9093](http://localhost:9093/)
 
 ### Generating test data
 
@@ -47,14 +45,11 @@ The [k6 tests in the `testdata` folder](./testdata/) inject Prometheus metrics a
 
 1. Install **k6 v1.2.0** or later.
 
-2. Run a k6 test with the following command:
+2. Run a k6 test with the following command for the cpu test data:
 
     ```bash
-    k6 run testdata/<FILE>.js
+    k6 run testdata/1.cpu-usage.js
     ```
-
-You can modify and run the k6 scripts to simulate different alert scenarios.
-For details on inserting data into Prometheus or Loki, see the `xk6-client-prometheus-remote` and `xk6-loki` APIs.
 
 [For more information about Demo Alerting in Prometheus and Grafana, see the original README from the source repo](https://github.com/grafana/demo-prometheus-and-grafana-alerts/blob/main/README.md)
 
