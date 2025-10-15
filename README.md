@@ -1,6 +1,7 @@
 # Grafana Demo and Dashboard Generator
 
 Docker Compose setup and Dashboard Generator for demonstrating alerting features in Grafana.
+<img width="1920" height="962" alt="Screenshot From 2025-10-15 10-47-51" src="https://github.com/user-attachments/assets/f69a8a54-c817-4fd6-915d-d6afe5e2635c" />
 
 
 ## Dashboard generator
