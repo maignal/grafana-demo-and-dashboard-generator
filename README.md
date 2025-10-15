@@ -23,17 +23,18 @@ The program prints the dashboard JSON to stdout.
 ## Docker Compose setup 
 This repository includes a [Docker Compose setup](./docker-compose.yaml) that runs Grafana, Prometheus, Prometheus Alertmanager, Loki, and an SMTP server for testing email notifications.
 
-To run the demo environment :
 
+Before running the demo environment, you might need to execute the following command :
+```
+cp environments/smtp.env.example environments/smtp.env
+```
+
+To run the demo environment :
 ```bash
 docker compose up -d
 ```
 
-You might need to execute the following command if encounter an issue with smtp.env.example.
 
-```
-cp environments/smtp.env.example environments/smtp.env
-```
 
 You can then access:
 - Grafana: [http://localhost:3000](http://localhost:3000/)
@@ -65,5 +66,8 @@ Or you can execute the following command. It will excract the json text from the
 ```
 echo "$(./gradlew run)" | sed -n '/^{/,/^}$/p' | tr -d '\n' > ../grafana/dashboards/definitions/cpu_monitoring.json
 ```
+If this command does not work, consider extracting yourself the json text by copying it from the output of `Main.java`. Then paste this json text inside `grafana/dashboards/definitions/cpu_monitoring.json`.
 
 After the `cpu_monitoring.json` file has been created, you will need to run the demo environment again.
+
+In Grafana, if you see an error message such as "invalid data source", you might need to refresh the page for the data sources to be updated in the dashboard. 
