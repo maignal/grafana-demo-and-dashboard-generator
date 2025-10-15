@@ -1,24 +1,37 @@
-# Demo Alerting in Prometheus and Grafana 
+# Grafana Demo and Dashboard Generator
 
-Grafana Alerting is built on the Prometheus Alerting model. This demo project showcases the similarities between Prometheus and Grafana alerting systems, covering topics such as:
+Docker Compose setup and Dashboard Generator for demonstrating alerting features in Grafana.
 
-- Creating alerts in Prometheus
-- Recreating the same alerts using Grafana
-- Setting up alerts based on Loki logs
-- Exploring alerting components like evaluation groups and notification policies
-- Creating template notifications
-- And more!
 
-This project pairs well with this [Alerting Presentation Template](https://docs.google.com/presentation/d/1XvJnBlNnXUjiS409ABN4NxNkFZoYDmoRKKoJqsvln-g/edit?usp=sharing). Together, they provide an excellent starting point for presenting the Prometheus Alerting model and demonstrating its use in Grafana.
+## Dashboard generator
 
-## Run the demo environment
+The `dashboard-generator` subproject contains small Java programs that emit Grafana JSON. A new generator for the demo `cpu_usage` metric is available at:
 
+ - `dashboard-generator/src/main/java/cpu-monitoring/CpuDashboardGenerator.java`
+
+
+To build and run the generator (replace the datasource UID if needed):
+
+```sh
+cd dashboard-generator
+./gradlew run
+```
+
+The program prints the dashboard JSON to stdout.
+
+## Docker Compose setup 
 This repository includes a [Docker Compose setup](./docker-compose.yaml) that runs Grafana, Prometheus, Prometheus Alertmanager, Loki, and an SMTP server for testing email notifications.
 
-To run the demo environment:
+To run the demo environment :
 
 ```bash
-docker compose up
+docker compose up -d
+```
+
+You might need to execute the following command if encounter an issue with smtp.env.example.
+
+```
+cp environments/smtp.env.example environments/smtp.env
 ```
 
 You can then access:
@@ -43,28 +56,18 @@ The [k6 tests in the `testdata` folder](./testdata/) inject Prometheus metrics a
 You can modify and run the k6 scripts to simulate different alert scenarios.
 For details on inserting data into Prometheus or Loki, see the `xk6-client-prometheus-remote` and `xk6-loki` APIs.
 
-### Receive webhook notifications
+[For more information about Demo Alerting in Prometheus and Grafana, see the original README from the source repo](https://github.com/grafana/demo-prometheus-and-grafana-alerts/blob/main/README.md)
 
-One of the simplest ways to receive alert notifications is by using a Webhook.  You can use [`webhook.site`](https://webhook.site/) to create Webhook URLs and view the incoming messages.
+## Display the dashboard in Grafana
 
-- For Prometheus alertmanager: 
-  
-  Set the Webhook URL to the [alertmanager.yml](./alertmanager/alertmanager.yml) configuration file.
+The json file describing the dashboard that Main.java generates is already part of the repo. Therefore, when setting up Docker Compose and k6, it should normally appear in grafana.
 
-- For Grafana:
-  
-  Create a Webhook contact point and assign it to the notification policy.
+You can also import the raw json output in the dashboard manager http://localhost:3000/dashboard/import 
 
-### Receive mail notifications
+Or you can execute the following command. It will excract the json text from the generator and paste it in a json file `grafana/dashboards/definitions`. Inside `dashboard-generator` :
 
-You can also configure notifications to be sent via your Gmail account using an [App Password](https://support.google.com/accounts/answer/185833?hl=en). After creating your App password:
+```
+echo "$(./gradlew run)" | sed -n '/^{/,/^}$/p' | tr -d '\n' > ../grafana/dashboards/definitions/cpu_monitoring.json
+```
 
-- For Prometheus Alertmanager:
-
-  Replace `your_mail@gmail` with your Gmail address in the [alertmanager.yml](./alertmanager/alertmanager.yml) configuration file.
-
-  Copy `alertmanager/smtp_auth_password.example` to `alertmanager/smtp_auth_password` and set your password.
-
-- For Grafana:
-
-  Copy `environments/smpt.env.example` to `environments/smpt.env` and set the appropriate environment variables values.
+After the `cpu_monitoring.json` file has been created, you will need to run the demo environment again.
